@@ -1,15 +1,35 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { getTimeAgo } from "../utils/time";
-import { posts, type Post } from "../mocks/posts";
+import { useEffect, useState } from "react";
+import { type Post } from "../mocks/posts";
 import Modal from "../components/Modal";
 import HeartIcon from "../components/HeartIcon";
+import { supabase } from "../utils/client";
 
 
 export default function RankPage() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [posts, setPosts] = useState<Post[]>([])
+
+  useEffect(() => {
+    async function getPosts(){
+      const {data: posts, error} = await supabase
+        .from('posts')
+        .select('*')
+        .range(0, 11)
+        .order('likes', {ascending: false})
+      
+      if(error){
+        console.error('No se peuden recuperar los Posts', error)
+      } else {
+        setPosts(posts)
+        console.log(posts)
+      }
+    }
+
+    getPosts()
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,12 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { posts as initialPosts, type Post } from "./mocks/posts";
+import { useEffect, useState } from "react";
+import { type Post } from "./mocks/posts";
 import PostCard from "./components/PostCard";
+import { supabase } from "./utils/client";
 
 
 export default function Home() {
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
+  //const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [posts, setPosts] = useState<Post[]>([])
+
+  useEffect(() => {
+    async function getPost(){
+      const {data: posts, error} = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', {ascending: false})
+
+      if(error){
+        console.error('No se pudieron recuperar los posts', error)
+      } else {
+        setPosts(posts)
+        console.log(posts)
+      }
+    }
+
+    getPost()
+  }, [])
 
   const handleLike = (postId: number | string) => {
     setPosts((prevPosts) =>
