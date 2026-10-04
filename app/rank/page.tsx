@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { type Post } from "../mocks/posts";
 import Modal from "../components/Modal";
 import HeartIcon from "../components/HeartIcon";
-import { supabase } from "../utils/client";
+import { supabase } from "../lib/client";
+import { Post } from "../types";
 
 
 export default function RankPage() {

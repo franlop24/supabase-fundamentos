@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { type Post } from "./mocks/posts";
 import PostCard from "./components/PostCard";
-import { supabase } from "./utils/client";
+import { supabase } from "./lib/client";
+import { Post } from "./types";
 
 
 export default function Home() {
