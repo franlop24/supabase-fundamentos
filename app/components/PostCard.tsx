@@ -10,7 +10,7 @@ export default function PostCard({ post, onLike }: { post: Post; onLike: (id: nu
       <div className="flex items-center gap-3 p-4">
         <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary">
           <Image
-            src={post.user?.avatar || "https://hnlassmvniqhlhihnbmt.supabase.co/storage/v1/object/public/supagram/profiles/blank-profile-picture.webp"}
+            src={post.user?.avatar || "/blank-profile-picture.webp"}
             alt={post.user?.username || 'default user'}
             fill
             className="object-cover"
