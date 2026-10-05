@@ -10,26 +10,49 @@ import { Post } from "../types";
 
 export default function RankPage() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [posts, setPosts] = useState<Post[]>([])
+
+  const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    async function getPosts(){
-      const {data: posts, error} = await supabase
-        .from('posts')
-        .select('*')
-        .range(0, 11)
-        .order('likes', {ascending: false})
-      
-      if(error){
-        console.error('No se peuden recuperar los Posts', error)
-      } else {
-        setPosts(posts)
-        console.log(posts)
-      }
-    }
+    const fetchPosts = async () => {
+      // 1. Obtener posts
+      const { data: postsData, error: postsError } = await supabase
+        .from("posts")
+        .select("id, image_url, caption, likes, user_id, created_at")
+        .gt("likes", 5)
+        .order("likes", { ascending: false });
 
-    getPosts()
-  }, [])
+      if (postsError) {
+        console.error("Error al obtener los posts:", postsError);
+        return;
+      }
+
+      // 2. Obtener IDs únicos de usuarios
+      const userIds = [...new Set(postsData.map((p) => p.user_id))];
+
+      // 3. Buscar profiles de esos usuarios
+      const { data: profilesData } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url")
+        .in("id", userIds);
+
+      // 4. Crear mapa de profiles por ID
+      const profilesMap = new Map(
+        profilesData?.map((p) => [p.id, { username: p.username, avatar_url: p.avatar_url }]) || []
+      );
+
+      // 5. Combinar posts con profiles
+      const postsWithProfiles: Post[] = postsData.map((post) => ({
+        ...post,
+        profile: profilesMap.get(post.user_id),
+        isLiked: false,
+      }));
+
+      setPosts(postsWithProfiles);
+    };
+
+    fetchPosts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">

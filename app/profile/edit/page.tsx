@@ -165,7 +165,7 @@ export default function EditProfilePage() {
         if (uploadError) throw uploadError;
 
         const { data: urlData } = supabase.storage
-          .from("images")
+          .from("supagram")
           .getPublicUrl(filePath);
 
         avatarUrl = urlData.publicUrl;
